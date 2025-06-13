@@ -1,4 +1,4 @@
-<!-- Defender.Service/Defender.Service.csproj -->
+<!-- File: Defender.Service/Defender.Service.csproj -->
 <Project Sdk="Microsoft.NET.Sdk.Worker">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -11,5 +11,8 @@
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="5.0.0" />
     <PackageReference Include="Quartz.Extensions.Hosting" Version="3.3.3" />
+    <!-- added for Windows Toast and Tray notifications -->
+    <PackageReference Include="CommunityToolkit.WinUI.Notifications" Version="8.1.1" />
+    <PackageReference Include="System.Windows.Extensions" Version="6.0.0" />
   </ItemGroup>
 </Project>
