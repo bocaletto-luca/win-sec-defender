@@ -6,13 +6,22 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <!-- Windows Service host -->
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="6.0.0" />
-    <PackageReference Include="Serilog.Extensions.Hosting" Version="5.0.0" />
+
+    <!-- Logging to file & Event Log -->
+    <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.0" />
+    <PackageReference Include="Serilog.Sinks.EventLog" Version="5.0.0" />
+
+    <!-- Scheduler -->
     <PackageReference Include="Quartz.Extensions.Hosting" Version="3.3.3" />
-    <!-- added for Windows Toast and Tray notifications -->
-    <PackageReference Include="CommunityToolkit.WinUI.Notifications" Version="8.1.1" />
-    <PackageReference Include="System.Windows.Extensions" Version="6.0.0" />
+
+    <!-- Health checks & Prometheus metrics -->
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="6.0.0" />
+    <PackageReference Include="prometheus-net.AspNetCore" Version="6.0.0" />
+
+    <!-- Secure credential storage -->
+    <PackageReference Include="CredentialManagement" Version="1.1.4" />
   </ItemGroup>
 </Project>
