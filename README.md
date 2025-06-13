@@ -3,7 +3,7 @@
 
 Defender-Service is a .NET 6 Windows security daemon that auto-installs as a Windows Service under LocalService. It schedules security checks (processes, Event Log), stores SMTP creds securely in Credential Manager, exposes `/healthz` and Prometheus `/metrics`, logs to file & Event Log, and sends alert emails with auto-restart on failure.
 
-[![Build](https://github.com/yourorg/defender-service/actions/workflows/ci.yml/badge.svg)](https://github.com/yourorg/defender-service/actions) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ## Features
 
