@@ -1,4 +1,4 @@
-// Defender.Service/appsettings.json
+// File: Defender.Service/appsettings.json
 {
   "Defender": {
     "CronSchedule": "0 0/30 * * * ?",
@@ -7,7 +7,7 @@
       "SmtpHost": "smtp.example.com",
       "SmtpPort": 587,
       "Username": "alert@example.com",
-      "Password": "supersecret",
+      "CredentialTarget": "DefenderServiceMail",
       "From": "alert@example.com",
       "To": "secops@example.com,admin@example.com"
     }
