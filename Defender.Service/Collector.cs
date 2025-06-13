@@ -1,36 +1,61 @@
-// Defender.Service/Collector.cs
-using Quartz;
-using Serilog;
+// File: Defender.Service/Collector.cs
+using System;
 using System.Diagnostics;
 using System.Net.Mail;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using Quartz;
+using Serilog;
 
-[DisallowConcurrentExecution]
-public class CollectorJob : IJob
+namespace Defender.Service
 {
-    private readonly DefenderConfig _cfg;
-    public CollectorJob(IOptions<DefenderConfig> opt)
-        => _cfg = opt.Value;
-
-    public async Task Execute(IJobExecutionContext context)
+    [DisallowConcurrentExecution]
+    public class CollectorJob : IJob
     {
-        Log.Information("CollectorJob executing");
-        var report = new StringBuilder();
+        private readonly DefenderConfig _cfg;
+        public CollectorJob(IOptions<DefenderConfig> opt) 
+            => _cfg = opt.Value;
 
-        // 1) Event Log check (esempio: Security log)
-        var evts = new EventLog("Security").Entries
-            .Cast<EventLogEntry>()
-            .Where(e => e.TimeGenerated > DateTime.Now.AddMinutes(-30));
-        report.AppendLine($"Recent Security Events: {evts.Count()}");
+        public async Task Execute(IJobExecutionContext context)
+        {
+            Log.Information("CollectorJob started");
+            var report = new StringBuilder();
 
-        // 2) Process watch
-        var procs = Process.GetProcesses();
-        foreach (var p in procs)
-            if (_cfg.ProcessesToWatch.Contains(p.ProcessName, StringComparer.OrdinalIgnoreCase))
-                report.AppendLine($"Watched process running: {p.ProcessName} (PID={p.Id})");
+            // Event Log example
+            try
+            {
+                var evts = new EventLog("Security").Entries;
+                report.AppendLine($"Security events in last interval: {evts.Count}");
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "Failed to read Security event log");
+            }
 
-        // 3) Network ports (esempi via netstat o SharpPcap…)
+            // Watch specific processes
+            foreach (var procName in _cfg.ProcessesToWatch)
+            {
+                foreach (var p in Process.GetProcessesByName(procName))
+                {
+                    report.AppendLine($"Watched process: {p.ProcessName} (PID {p.Id})");
+                    VisualNotifier.ShowTrayBalloon("Security Alert",
+                        $"Process {p.ProcessName} started (PID {p.Id})");
+                    VisualNotifier.ShowToast("Defender Alert",
+                        $"Process {p.ProcessName} running");
+                }
+            }
 
-        // 4) Compose & send email
-        await Notifier.SendAsync(_cfg.Email, report.ToString());
+            // Send email
+            try
+            {
+                await Notifier.SendAsync(_cfg.Email, report.ToString());
+                Log.Information("Alert email sent");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to send alert email");
+            }
+        }
     }
 }
