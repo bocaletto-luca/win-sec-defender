@@ -1,21 +1,22 @@
 // File: Defender.Service/Program.cs
+using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using System;
-using System.Threading;
+using Prometheus;
 
-[assembly: System.STAThread]  // ensure COM for toasts
 namespace Defender.Service
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            // Setup Serilog early so toasts can log if needed
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
                 .WriteTo.File("logs/defender-.log", rollingInterval: RollingInterval.Day)
+                .WriteTo.EventLog("DefenderService", manageEventSource: true)
                 .CreateLogger();
 
             try
@@ -35,10 +36,24 @@ namespace Defender.Service
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .UseWindowsService()
-                .ConfigureAppConfiguration((ctx, cfg) =>
-                    cfg.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                )
+                .UseWindowsService() // runs under LocalService by default
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseUrls("http://0.0.0.0:8000");
+                    webBuilder.ConfigureServices(services =>
+                    {
+                        services.AddHealthChecks();
+                    });
+                    webBuilder.Configure(app =>
+                    {
+                        app.UseRouting();
+                        app.UseEndpoints(endpoints =>
+                        {
+                            endpoints.MapHealthChecks("/healthz");
+                            endpoints.MapMetrics(); // Prometheus metrics at /metrics
+                        });
+                    });
+                })
                 .UseSerilog()
                 .ConfigureServices((ctx, services) =>
                 {
