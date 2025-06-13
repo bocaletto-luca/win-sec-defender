@@ -1,0 +1,20 @@
+// Defender.Service/appsettings.json
+{
+  "Defender": {
+    "CronSchedule": "0 0/30 * * * ?",
+    "ProcessesToWatch": [ "powershell", "wmic" ],
+    "Email": {
+      "SmtpHost": "smtp.example.com",
+      "SmtpPort": 587,
+      "Username": "alert@example.com",
+      "Password": "supersecret",
+      "From": "alert@example.com",
+      "To": "secops@example.com,admin@example.com"
+    }
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information"
+    }
+  }
+}
