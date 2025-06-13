@@ -1,0 +1,45 @@
+<!-- File: installer/DefenderInstaller.wxs -->
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="DefenderService" Language="1033" Version="1.0.0.0"
+           Manufacturer="YourCompany" UpgradeCode="PUT-GUID-HERE">
+    <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" />
+    <MediaTemplate />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version is already installed." />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="DefenderService" />
+      </Directory>
+    </Directory>
+
+    <Feature Id="Complete" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+    </Feature>
+
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="DefenderExe" Guid="PUT-GUID-HERE">
+        <File Source="bin\\Release\\net6.0\\Defender.Service.exe" KeyPath="yes" />
+
+        <ServiceInstall
+            Id="InstallService"
+            Type="ownProcess"
+            Name="DefenderService"
+            DisplayName="Defender Security Service"
+            Description="Monitors system events and alerts"
+            Start="auto"
+            Account="NT AUTHORITY\\LocalService"
+            ErrorControl="normal" />
+
+        <ServiceControl
+            Id="StartService"
+            Start="install"
+            Stop="both"
+            Remove="uninstall"
+            Name="DefenderService"
+            Wait="yes" />
+      </Component>
+    </ComponentGroup>
+  </Product>
+</Wix>
